@@ -91,7 +91,7 @@ public class UsuarioAdminActivity extends AppCompatActivity {
             case R.id.menuitem_limparform_admin:
                 cleanForm();
                 break;
-            case R.id.menuitem_list_users:
+            case R.id.menuitem_produtos_cdbar:
                 Intent intent = new Intent(UsuarioAdminActivity.this, UsuariosActivity.class);
                 startActivity(intent);
                 break;

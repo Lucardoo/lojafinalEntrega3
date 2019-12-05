@@ -133,4 +133,7 @@
     <string name="toast_preencher_todos_campos">Você deve preencher todos os campos</string>
     <string name="cadastrar_usuario">Cadstrar-se</string>
     <string name="cadastrar_se">Cadastrar-se</string>
+    <string name="message_processando">processando...</string>
+    <string name="titulo_janela_galeria_imagens">galeria de imagens</string>
+    <string name="toast_foto_produto_upload_fail">upload falhou</string>
 </resources>

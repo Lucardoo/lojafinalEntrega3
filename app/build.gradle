@@ -32,6 +32,8 @@ dependencies {
     //dependência para o serviço de autenticação do firebase
     implementation 'com.google.firebase:firebase-auth:16.1.0'
     implementation 'com.google.firebase:firebase-database:16.1.0'
+    //adiciona o serviço de firestorage
+    implementation 'com.google.firebase:firebase-storage:16.0.1'
     //adiciona a dependência para o barcode (google vision)
     implementation 'com.google.android.gms:play-services-vision:17.0.2'
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'

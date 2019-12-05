@@ -100,7 +100,7 @@ public class ClienteAdminActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
-            case R.id.menuitem_list_users:{
+            case R.id.menuitem_produtos_cdbar:{
                 // launch barcode activity.
                 Intent intent = new Intent(this, BarcodeCaptureActivity.class);
                 intent.putExtra(BarcodeCaptureActivity.AutoFocus, true); //true liga a funcionalidade autofoco

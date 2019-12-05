@@ -2,10 +2,10 @@ package br.ifsul.edu.lojafinal.activity;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -14,22 +14,24 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-
-import br.ifsul.edu.lojafinal.R;
-import br.ifsul.edu.lojafinal.model.Pedido;
-import br.ifsul.edu.lojafinal.adapter.CarrinhoAdapter;
-import br.ifsul.edu.lojafinal.model.ItemPedido;
-import br.ifsul.edu.lojafinal.model.Produto;
-import br.ifsul.edu.lojafinal.setup.AppSetup;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import br.ifsul.edu.lojafinal.R;
+import br.ifsul.edu.lojafinal.adapter.CarrinhoAdapter;
+import br.ifsul.edu.lojafinal.model.ItemPedido;
+import br.ifsul.edu.lojafinal.model.Pedido;
+import br.ifsul.edu.lojafinal.model.Produto;
+import br.ifsul.edu.lojafinal.setup.AppSetup;
 
 
 public class CarrinhoActivity extends AppCompatActivity {
@@ -184,12 +186,14 @@ public class CarrinhoActivity extends AppCompatActivity {
                 FirebaseDatabase database = FirebaseDatabase.getInstance();
                 DatabaseReference myRef = database.getReference("pedidos/");
 
+                String data = geraData();
+
                 Pedido pedido = new Pedido();
 
-                pedido.setFormaDePagamento("dinheiro");
+                pedido.setFormaDePagamento("espécie");
                 pedido.setEstado("aberto");
-                pedido.setDataCriacao(Calendar.getInstance().getTime());
-                pedido.setDataModificacao(Calendar.getInstance().getTime());
+                pedido.setDataCriacao(data);
+                pedido.setDataModificacao(data);
                 pedido.setTotalPedido(valorTotal);
                 pedido.setSituacao(true);
                 pedido.setItens(AppSetup.carrinho);
@@ -267,6 +271,13 @@ public class CarrinhoActivity extends AppCompatActivity {
         });
 
         builder.show();
+    }
+
+    private static String geraData() {
+        Date data = new Date();
+        SimpleDateFormat horaAtual = new SimpleDateFormat("dd/MM/yyyy");
+        String horaAtualFormat = horaAtual.format(data);
+        return horaAtualFormat;
     }
 
     @Override

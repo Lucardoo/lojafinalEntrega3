@@ -36,7 +36,7 @@
                 app:srcCompat="@drawable/img_carrinho_de_compras" />
 
             <TextView
-                android:id="@+id/textView"
+                android:id="@+id/tvEmail_nav_header"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="8dp"
@@ -52,16 +52,12 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginLeft="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginRight="8dp"
                 android:ems="10"
                 android:hint="@string/hint_codigo_de_barras"
-                android:importantForAutofill="no"
                 android:inputType="number"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/imb_pesquisar"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView"
-                tools:targetApi="o" />
+                app:layout_constraintTop_toBottomOf="@+id/tvEmail_nav_header" />
 
             <TextView
                 android:id="@+id/textView2"
@@ -85,8 +81,7 @@
                 android:inputType="textPersonName"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView2"
-                android:importantForAutofill="no" tools:targetApi="o"/>
+                app:layout_constraintTop_toBottomOf="@+id/textView2" />
 
             <TextView
                 android:id="@+id/textView3"
@@ -98,7 +93,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/etNomeProdutoAdmin" />
 
             <EditText
-                android:id="@+id/etDescProdutoAdmin"
+                android:id="@+id/etDescricaoProdutoAdmin"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
@@ -110,8 +105,7 @@
                 android:inputType="textPersonName"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView3"
-                android:importantForAutofill="no" tools:targetApi="o" />
+                app:layout_constraintTop_toBottomOf="@+id/textView3" />
 
             <TextView
                 android:id="@+id/textView4"
@@ -119,38 +113,36 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:text="@string/label_valor"
-                app:layout_constraintStart_toStartOf="@+id/etDescProdutoAdmin"
-                app:layout_constraintTop_toBottomOf="@+id/etDescProdutoAdmin" />
+                app:layout_constraintStart_toStartOf="@+id/etDescricaoProdutoAdmin"
+                app:layout_constraintTop_toBottomOf="@+id/etDescricaoProdutoAdmin" />
 
             <EditText
                 android:id="@+id/etValorProdutoAdmin"
                 android:layout_width="174dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
                 android:layout_marginEnd="8dp"
+                android:layout_marginLeft="8dp"
                 android:layout_marginRight="8dp"
+                android:layout_marginStart="8dp"
                 android:digits="0123456789,"
                 android:ems="10"
                 android:hint="@string/hint_digite_valor"
-                android:importantForAutofill="no"
+                android:inputType="numberDecimal"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView4"
-                tools:targetApi="o" />
+                app:layout_constraintTop_toBottomOf="@+id/textView4" />
 
             <TextView
                 android:id="@+id/textView5"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/label_quantidade"
-                android:inputType="numberDecimal"
                 app:layout_constraintStart_toStartOf="@+id/etValorProdutoAdmin"
                 app:layout_constraintTop_toBottomOf="@+id/etValorProdutoAdmin" />
 
             <EditText
-                android:id="@+id/etQuantProdutoAdmin"
+                android:id="@+id/etQuantidadeProdutoAdmin"
                 android:layout_width="175dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
@@ -163,32 +155,45 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView5"
-                android:importantForAutofill="no" tools:targetApi="o" />
+                app:layout_constraintTop_toBottomOf="@+id/textView5" />
 
             <Button
-                android:id="@+id/btSalvarProdutoAdmin"
+                android:id="@+id/btInserirProdutoAdmin"
                 android:layout_width="142dp"
                 android:layout_height="57dp"
-                android:layout_marginStart="24dp"
-                android:layout_marginLeft="24dp"
-                android:layout_marginTop="24dp"
-                android:layout_marginEnd="24dp"
-                android:layout_marginRight="24dp"
                 android:layout_marginBottom="8dp"
-                android:background="#2B2488"
+                android:layout_marginEnd="24dp"
+                android:layout_marginLeft="24dp"
+                android:layout_marginRight="24dp"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="24dp"
+                android:background="@color/colorAccent"
                 android:text="@string/bt_salvar"
-                android:textColor="#FFFFFF"
+                android:textColor="@color/font_white"
                 android:textSize="22sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.363"
-                app:layout_constraintStart_toEndOf="@+id/etQuantProdutoAdmin"
+                app:layout_constraintStart_toEndOf="@+id/etQuantidadeProdutoAdmin"
                 app:layout_constraintTop_toTopOf="@+id/etValorProdutoAdmin"
                 app:layout_constraintVertical_bias="0.0" />
 
+            <ImageButton
+                android:id="@+id/imb_pesquisar"
+                android:layout_width="50dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:background="@color/colorAccent"
+                android:contentDescription="@string/menu_pesquisar"
+                app:layout_constraintBottom_toBottomOf="@+id/etCodigoProduto"
+                app:layout_constraintEnd_toEndOf="@+id/etNomeProdutoAdmin"
+                app:layout_constraintStart_toEndOf="@+id/etCodigoProduto"
+                app:layout_constraintTop_toTopOf="@+id/etCodigoProduto"
+                app:srcCompat="@drawable/ic_search_white_24dp" />
+
             <ProgressBar
-                android:id="@+id/pbFotoProdutoAdmin"
+                android:id="@+id/pb_foto_produto_admin"
                 style="?android:attr/progressBarStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

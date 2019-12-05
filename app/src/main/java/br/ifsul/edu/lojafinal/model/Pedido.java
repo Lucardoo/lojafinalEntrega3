@@ -7,8 +7,8 @@ public class Pedido {
     private String key;
     private String formaDePagamento;
     private String estado;
-    private Date dataCriacao;
-    private Date dataModificacao;
+    private String dataCriacao;
+    private String dataModificacao;
     private Double totalPedido;
     private boolean situacao;
     private List<ItemPedido> itens; //associação entre as classes Pedido-ItemPedido
@@ -40,19 +40,19 @@ public class Pedido {
         this.estado = estado;
     }
 
-    public Date getDataCriacao() {
+    public String getDataCriacao() {
         return dataCriacao;
     }
 
-    public void setDataCriacao(Date dataCriacao) {
+    public void setDataCriacao(String dataCriacao) {
         this.dataCriacao = dataCriacao;
     }
 
-    public Date getDataModificacao() {
+    public String getDataModificacao() {
         return dataModificacao;
     }
 
-    public void setDataModificacao(Date dataModificacao) {
+    public void setDataModificacao(String dataModificacao) {
         this.dataModificacao = dataModificacao;
     }
 
