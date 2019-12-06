@@ -1,22 +1,28 @@
 package br.ifsul.edu.lojafinal.adapter;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.support.annotation.NonNull;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
 import java.text.NumberFormat;
 import java.util.List;
 
-
 import br.ifsul.edu.lojafinal.R;
 import br.ifsul.edu.lojafinal.model.ItemPedido;
+import br.ifsul.edu.lojafinal.setup.AppSetup;
 
 
 public class CarrinhoAdapter extends ArrayAdapter<ItemPedido> {
@@ -42,7 +48,7 @@ public class CarrinhoAdapter extends ArrayAdapter<ItemPedido> {
         }
 
         //bindview
-        ItemPedido item = getItem(position);
+        final ItemPedido item = getItem(position);
         holder.nomeProduto.setText(item.getProduto().getNome());
         holder.quantidade.setText(item.getQuantidade().toString());
         holder.totalDoItem.setText(NumberFormat.getCurrencyInstance().format(item.getTotalItem()));
@@ -50,7 +56,19 @@ public class CarrinhoAdapter extends ArrayAdapter<ItemPedido> {
             holder.pbFoto.setVisibility(View.INVISIBLE);
             holder.fotoProduto.setImageResource(R.drawable.img_carrinho_de_compras);
         }else{
-            //carrega a imagem do serviço Storage aqui
+            StorageReference mStorageRef =
+                    FirebaseStorage.getInstance().getReference("images/produtos/" + item.getProduto().getCodigoDeBarras()  + ".jpeg");
+            final long ONE_MEGABYTE = 1024 * 1024;
+            mStorageRef.getBytes(ONE_MEGABYTE)
+                    .addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                        @Override
+                        public void onSuccess(byte[] bytes) {
+                            Bitmap fotoEmBitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                            holder.fotoProduto.setImageBitmap(fotoEmBitmap);
+                            AppSetup.cacheProdutos.put(item.getProduto().getKey(), fotoEmBitmap);
+                            holder.pbFoto.setVisibility(ProgressBar.INVISIBLE);
+                        }
+                    });
         }
         return convertView;
     }
@@ -65,7 +83,7 @@ public class CarrinhoAdapter extends ArrayAdapter<ItemPedido> {
         public ViewHolder(View convertView){
             //mapeia os componentes da UI para vincular os dados do objeto de modelo
             nomeProduto = convertView.findViewById(R.id.tvNomeProdutoCarrinhoAdapter);
-            quantidade = convertView.findViewById(R.id.tvQuantidadeDeProdutoCarrinhoAdapater);
+            quantidade = convertView.findViewById(R.id.tvdata_pedido);
             totalDoItem =  convertView.findViewById(R.id.tvTotalItemCarrinhoAdapter);
             fotoProduto = convertView.findViewById(R.id.imvFotoProdutoCarrinhoAdapter);
             pbFoto = convertView.findViewById(R.id.pb_foto_carrinho);

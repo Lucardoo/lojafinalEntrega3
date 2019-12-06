@@ -9,11 +9,11 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import br.ifsul.edu.lojafinal.R;
-import br.ifsul.edu.lojafinal.model.Pedido;
-
 import java.text.NumberFormat;
 import java.util.List;
+
+import br.ifsul.edu.lojafinal.R;
+import br.ifsul.edu.lojafinal.model.Pedido;
 
 public class PedidosAdapter extends ArrayAdapter<Pedido> {
     private final Context context;
@@ -40,7 +40,7 @@ public class PedidosAdapter extends ArrayAdapter<Pedido> {
         final Pedido itemPedido = getItem(position);
 
         holder.nomeProduto.setText(itemPedido.getCliente().getNome());
-        holder.quantidade.setText(itemPedido.getDataCriacao().toString());
+        holder.data.setText(itemPedido.getDataCriacao());
         holder.totalDoItem.setText(NumberFormat.getCurrencyInstance().format(itemPedido.getTotalPedido()));
 
         return convertView;
@@ -48,13 +48,13 @@ public class PedidosAdapter extends ArrayAdapter<Pedido> {
 
     private class ViewHolder {
         TextView nomeProduto;
-        TextView quantidade;
+        TextView data;
         TextView totalDoItem;
 
         public ViewHolder(View convertView) {
             //mapeia os componentes da UI para vincular os dados do objeto de modelo
             nomeProduto = convertView.findViewById(R.id.tvNomeProdutoCarrinhoAdapter);
-            quantidade = convertView.findViewById(R.id.tvQuantidadeDeProdutoCarrinhoAdapater);
+            data = convertView.findViewById(R.id.tvdata_pedido);
             totalDoItem = convertView.findViewById(R.id.tvTotalItemCarrinhoAdapter);
         }
     }
