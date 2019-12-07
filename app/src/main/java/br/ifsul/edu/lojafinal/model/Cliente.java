@@ -1,6 +1,9 @@
 package br.ifsul.edu.lojafinal.model;
 
+import com.google.firebase.database.Exclude;
+
 import java.io.Serializable;
+import java.util.ArrayList;
 
 public class Cliente implements Serializable {
     private Long codigoDeBarras;
@@ -9,7 +12,9 @@ public class Cliente implements Serializable {
     private String sobrenome;
     private String url_foto = "";
     private boolean situacao;
+    private ArrayList<String> pedidos_keys = new ArrayList<>();
     private String key; //atributo apenas local
+    private Integer index; //atributo apenas local (as anotações "exclude no get e no set determina isso)
 
     public Cliente() {
     }
@@ -62,12 +67,28 @@ public class Cliente implements Serializable {
         this.situacao = situacao;
     }
 
+    public void setPedidos(ArrayList<String> keys_pedidos) {
+        this.pedidos_keys = keys_pedidos;
+    }
+
+    @Exclude
     public String getKey() {
         return key;
     }
 
+    @Exclude
     public void setKey(String key) {
         this.key = key;
+    }
+
+    @Exclude
+    public Integer getIndex() {
+        return index;
+    }
+
+    @Exclude
+    public void setIndex(Integer index) {
+        this.index = index;
     }
 
     @SuppressWarnings("NullableProblems")

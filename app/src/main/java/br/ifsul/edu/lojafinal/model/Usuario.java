@@ -4,6 +4,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.Exclude;
 
 public class Usuario {
+    private Long codigoDeBarras;
     private FirebaseUser firebaseUser;
     private String nome;
     private String sobrenome;
@@ -23,6 +24,14 @@ public class Usuario {
     @Exclude
     public void setFirebaseUser (FirebaseUser firebaseUser){
         this.firebaseUser = firebaseUser;
+    }
+
+    public Long getCodigoDeBarras() {
+        return codigoDeBarras;
+    }
+
+    public void setCodigoDeBarras(Long codigoDeBarras) {
+        this.codigoDeBarras = codigoDeBarras;
     }
 
     public String getFuncao() {
@@ -63,5 +72,17 @@ public class Usuario {
 
     public void setSobrenome(String sobrenome){
         this.sobrenome = sobrenome;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "codigoDeBarras=" + codigoDeBarras +
+                ", nome='" + nome + '\'' +
+                ", sobrenome='" + sobrenome + '\'' +
+                ", funcao='" + funcao + '\'' +
+                ", email='" + email + '\'' +
+                ", firebaseUser=" + firebaseUser +
+                '}';
     }
 }

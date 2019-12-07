@@ -3,6 +3,8 @@ package br.ifsul.edu.lojafinal.model;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 
+import com.google.firebase.database.Exclude;
+
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -76,18 +78,22 @@ public class Produto implements Serializable{
         this.url_foto = url_foto;
     }
 
+    @Exclude
     public String getKey() {
         return key;
     }
 
+    @Exclude
     public void setKey(String key) {
         this.key = key;
     }
 
-    public Integer getIndex(){
+    @Exclude
+    public Integer getIndex() {
         return index;
     }
 
+    @Exclude
     public void setIndex(Integer index) {
         this.index = index;
     }

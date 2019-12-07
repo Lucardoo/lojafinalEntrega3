@@ -67,8 +67,7 @@ public class ProdutoDetalheActivity extends AppCompatActivity {
         if(produto.getUrl_foto().equals("")){
             imvFoto.setImageResource(R.drawable.img_carrinho_de_compras);
         }else{
-            //carrega a imagem do serviço Storage aqui
-            //aqui virá a imagem
+            imvFoto.setImageBitmap(AppSetup.cacheProdutos.get(produto.getKey()));
         }
 
         // obtém a referência do database e do nó
