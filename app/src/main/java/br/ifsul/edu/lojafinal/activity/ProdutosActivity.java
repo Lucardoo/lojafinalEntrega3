@@ -20,9 +20,6 @@ import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import br.ifsul.edu.lojafinal.R;
-import br.ifsul.edu.lojafinal.adapter.ProdutosAdapter;
-import br.ifsul.edu.lojafinal.barcode.BarcodeCaptureActivity;
 import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.firebase.auth.FirebaseAuth;
@@ -35,6 +32,9 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import br.ifsul.edu.lojafinal.R;
+import br.ifsul.edu.lojafinal.adapter.ProdutosAdapter;
+import br.ifsul.edu.lojafinal.barcode.BarcodeCaptureActivity;
 import br.ifsul.edu.lojafinal.model.Produto;
 import br.ifsul.edu.lojafinal.setup.AppSetup;
 
@@ -67,12 +67,21 @@ public class ProdutosActivity extends AppCompatActivity implements NavigationVie
         TextView tvUsuarioEmail = headerMain.findViewById(R.id.tvEmailUsuarioAdapter);
         TextView tvUsuarioNome = headerMain.findViewById(R.id.tvNomeUsuario);
 
-        tvUsuarioEmail.setText(AppSetup.user.getEmail());
-        tvUsuarioNome.setText(AppSetup.user.getNome());
-
-        if (AppSetup.user.getFuncao().equals("Administrador")){
-            navigationView.getMenu().findItem(R.id.admGroup).setVisible(true);
+        if (AppSetup.user != null) {
+            tvUsuarioEmail.setText(AppSetup.user.getEmail());
+            tvUsuarioNome.setText(AppSetup.user.getNome());
+        } else {
+            tvUsuarioEmail.setText("email teste");
+            tvUsuarioNome.setText("nome teste");
         }
+
+        if (AppSetup.user != null) {
+            if (AppSetup.user.getFuncao().equals("Administrador")){
+                navigationView.getMenu().findItem(R.id.admGroup).setVisible(true);
+            }
+        }
+
+
 
         lvProdutos = findViewById(R.id.lv_usuarios);
         lvProdutos.setOnItemClickListener(new AdapterView.OnItemClickListener() {

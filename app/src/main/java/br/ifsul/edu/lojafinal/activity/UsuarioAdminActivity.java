@@ -2,11 +2,11 @@ package br.ifsul.edu.lojafinal.activity;
 
 import android.content.Intent;
 import android.os.Build;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,10 +16,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 
-
-import br.ifsul.edu.lojafinal.R;
-import br.ifsul.edu.lojafinal.model.Usuario;
-import br.ifsul.edu.lojafinal.setup.AppSetup;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -30,12 +26,17 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Objects;
 
+import br.ifsul.edu.lojafinal.R;
+import br.ifsul.edu.lojafinal.model.Usuario;
+import br.ifsul.edu.lojafinal.setup.AppSetup;
+
+
 public class UsuarioAdminActivity extends AppCompatActivity {
     private static final String TAG = "usuarioAdminActivity";
     private FirebaseAuth mAuth;
     private EditText etEmailUser, etPasswordUser, etNomeUser, etSobrenomeuser;
     private Spinner spFuncaoUser;
-    private String[] FUNCAO = new String[]{"Vendedor", "Administrador", "Cliente"};
+    private String[] funcContent = new String[]{"Vendedor", "Administrador"};
     private Button cadastrar;
     private Usuario usuario;
 
@@ -54,7 +55,7 @@ public class UsuarioAdminActivity extends AppCompatActivity {
         spFuncaoUser = findViewById(R.id.spFuncaoUser);
         cadastrar = findViewById(R.id.btCadastrarUser);
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, FUNCAO);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, funcContent);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spFuncaoUser.setAdapter(adapter);
 
@@ -124,30 +125,33 @@ public class UsuarioAdminActivity extends AppCompatActivity {
         });
     }
 
+
+
+
     private void cadastrarUser(){
-        usuario = new Usuario();
+            usuario = new Usuario();
 
-        usuario.setFirebaseUser(mAuth.getCurrentUser());
-        usuario.setNome(etNomeUser.getText().toString());
-        usuario.setSobrenome(etSobrenomeuser.getText().toString());
-        usuario.setFuncao(FUNCAO[spFuncaoUser.getSelectedItemPosition()]);
-        usuario.setEmail(mAuth.getCurrentUser().getEmail());
-        FirebaseDatabase.getInstance().getReference().child("usuarios/").child(usuario.getFirebaseUser().getUid()).setValue(usuario)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        cleanForm();
+            usuario.setFirebaseUser(mAuth.getCurrentUser());
+            usuario.setNome(etNomeUser.getText().toString());
+            usuario.setSobrenome(etSobrenomeuser.getText().toString());
+            usuario.setFuncao(funcContent[spFuncaoUser.getSelectedItemPosition()]);
+            usuario.setEmail(mAuth.getCurrentUser().getEmail());
+            FirebaseDatabase.getInstance().getReference().child("usuarios/").child(usuario.getFirebaseUser().getUid()).setValue(usuario)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            cleanForm();
 
-                        Snackbar.make(findViewById(R.id.container_activity_user_admin), R.string.user_cadastrado, Snackbar.LENGTH_LONG).show();
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Snackbar.make(findViewById(R.id.container_activity_user_admin), R.string.nao_cadastro_user, Snackbar.LENGTH_LONG).show();
-                    }
-                });
+                            Snackbar.make(findViewById(R.id.container_activity_user_admin), R.string.user_cadastrado, Snackbar.LENGTH_LONG).show();
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Snackbar.make(findViewById(R.id.container_activity_user_admin), R.string.nao_cadastro_user, Snackbar.LENGTH_LONG).show();
+                }
+            });
 
-        AppSetup.user = usuario;
+            AppSetup.user = usuario;
     }
 
     private void cleanForm(){

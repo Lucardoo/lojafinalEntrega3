@@ -106,7 +106,8 @@
         android:layout_marginLeft="0dp"
         android:layout_marginTop="165dp"
         android:layout_marginEnd="20dp"
-        android:layout_marginRight="20dp" />
+        android:layout_marginRight="20dp"
+        android:spinnerMode="dialog" />
 
 
     <Button
@@ -116,7 +117,7 @@
         android:layout_below="@+id/etPasswordUser"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="21dp"
-        android:background="#2B2488"
+        android:background="@color/colorAccent"
         android:text="@string/btCadastrarUser"
-        android:textColor="#FFFFFF" />
+        android:textColor="@color/colorPrimaryDark" />
 </RelativeLayout>

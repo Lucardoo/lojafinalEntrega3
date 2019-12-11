@@ -15,47 +15,18 @@
       },
       "oauth_client": [
         {
+          "client_id": "1021529536307-qbt0h1c2n4h970rqp5bv6f8htjd0agdh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "br.ifsul.edu.lojafinal",
+            "certificate_hash": "f6e8df00d3af2449078dd0b4953144ffb7f75278"
+          }
+        },
+        {
           "client_id": "1021529536307-n62olfni2u9n15l6bb7ubg9au58upvb4.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "br.ifsul.edu.lojafinal",
-            "certificate_hash": "f7cc9b12aa472aa587f04d8b081a54497f0ff837"
-          }
-        },
-        {
-          "client_id": "1021529536307-5e3aa6s5k6otpul5i8mbnf2gvbec7ebl.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyByGsDo6NQARDvxtsuFVUqY_hSEkJh0l3g"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "1021529536307-5e3aa6s5k6otpul5i8mbnf2gvbec7ebl.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:1021529536307:android:0edac2ea160e595f69f046",
-        "android_client_info": {
-          "package_name": "com.example.vendasjava"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "1021529536307-n0tjdgihs4tqobvnq9pgg34kumj00pi5.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.example.vendasjava",
             "certificate_hash": "f7cc9b12aa472aa587f04d8b081a54497f0ff837"
           }
         },

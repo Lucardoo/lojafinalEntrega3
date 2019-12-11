@@ -3,10 +3,10 @@ package br.ifsul.edu.lojafinal.activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,10 +18,9 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import br.ifsul.edu.lojafinal.R;
-import br.ifsul.edu.lojafinal.barcode.BarcodeCaptureActivity;
-import br.ifsul.edu.lojafinal.model.Cliente;
 import com.google.android.gms.common.api.CommonStatusCodes;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -29,6 +28,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+
+import br.ifsul.edu.lojafinal.R;
+import br.ifsul.edu.lojafinal.barcode.BarcodeCaptureActivity;
+import br.ifsul.edu.lojafinal.model.Cliente;
+import br.ifsul.edu.lojafinal.setup.AppSetup;
 
 public class ClienteAdminActivity extends AppCompatActivity {
     private static final String TAG = "clienteAdminActivity";
@@ -51,8 +55,6 @@ public class ClienteAdminActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cliente_admin);
 
-        database = FirebaseDatabase.getInstance();
-
         cliente = new Cliente();
 
         etCodigoDeBarras = findViewById(R.id.etCodigoDeBarras_clienteAdmin);
@@ -69,14 +71,31 @@ public class ClienteAdminActivity extends AppCompatActivity {
                 !etSobrenome.getText().toString().isEmpty() && !etCPF.getText().toString().isEmpty()){
 
 
-                    cliente.setCodigoDeBarras(Long.valueOf(etCodigoDeBarras.getText().toString()));
+                    DatabaseReference myRef = database.getReference("clientes");
+                    Long codigoDeBarras = Long.valueOf(etCodigoDeBarras.getText().toString());
+
                     cliente.setNome(etNome.getText().toString());
                     cliente.setSobrenome(etSobrenome.getText().toString());
+                    cliente.setCodigoDeBarras(codigoDeBarras);
                     cliente.setCpf(etCPF.getText().toString());
+                    cliente.setKey(myRef.push().getKey()); //cria o nó e devolve a key
+                    myRef.child(cliente.getKey()).setValue(cliente)
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    cleanForm();
+
+                                    Snackbar.make(findViewById(R.id.container_activity_user_admin), R.string.user_cadastrado, Snackbar.LENGTH_LONG).show();
+                                }
+                            }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Snackbar.make(findViewById(R.id.container_activity_user_admin), R.string.nao_cadastro_user, Snackbar.LENGTH_LONG).show();
+                        }
+                    });
 
                     Log.d("TAG", "Objeto de cliente: " + cliente);
-
-                    saveClient();
+                    AppSetup.cliente = cliente;
                 }else{
                     Snackbar.make(findViewById(R.id.container_activity_cliente_admin), R.string.snack_preencher_todos_campos, Snackbar.LENGTH_LONG).show();
                 }
@@ -190,8 +209,5 @@ public class ClienteAdminActivity extends AppCompatActivity {
         etCPF.setText(null);
     }
 
-    public void saveClient(){
-
-    }
 
 }
