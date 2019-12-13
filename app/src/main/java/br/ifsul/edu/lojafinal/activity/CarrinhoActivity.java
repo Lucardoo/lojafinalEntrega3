@@ -231,8 +231,8 @@ public class CarrinhoActivity extends AppCompatActivity {
         builder.setPositiveButton(R.string.alertdialog_sim, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                for(int j = 0; j < itens.size(); j++){
-                    atualizaEstoque(i);
+                for(int item = 0; item < itens.size(); item++){
+                    atualizaEstoque(item);
                 }
 
                 AppSetup.carrinho.clear();

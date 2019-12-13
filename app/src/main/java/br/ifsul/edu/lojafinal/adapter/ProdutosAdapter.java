@@ -45,19 +45,19 @@ public class ProdutosAdapter extends ArrayAdapter<Produto> {
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
 
-        //declara o objeto que irá segurar os objetos escaneados da view
+
         final ViewHolder holder;
         //infla a view
         if(convertView == null){
             convertView = LayoutInflater.from(context).inflate(R.layout.item_produto_adapter, parent, false);
             holder = new ViewHolder(convertView);
-            convertView.setTag(holder); //anexa à view o holder
+            convertView.setTag(holder);
         }else{
-            holder = (ViewHolder) convertView.getTag(); //pega da view o holder
+            holder = (ViewHolder) convertView.getTag();
         }
 
         //vincula os dados do objeto de modelo à view
-        final Produto produto = getItem(position); //devolve o objeto do modelo
+        final Produto produto = getItem(position);
         holder.tvNome.setText(produto.getNome());
         holder.tvEstoque.setText(produto.getQuantidade().toString());
         holder.tvValor.setText(NumberFormat.getCurrencyInstance().format(produto.getValor()));
@@ -94,10 +94,6 @@ public class ProdutosAdapter extends ArrayAdapter<Produto> {
         return convertView;
     }
 
-    /*
-        A classe ViewHolder irá segurar os objetos escaneados da view (isso acelera o
-        processamento dos cartões).
-     */
     private class ViewHolder {
 
         final TextView tvNome;
@@ -107,7 +103,7 @@ public class ProdutosAdapter extends ArrayAdapter<Produto> {
         final ProgressBar pbFotoProduto;
 
         public ViewHolder(View view) {
-            //mapeia os componentes da UI para vincular os dados do objeto de modelo
+
             tvNome = view.findViewById(R.id.tvNomeProdutoAdapter);
             tvEstoque = view.findViewById(R.id.tvEstoqueProdutoAdapater);
             tvValor = view.findViewById(R.id.tvValorProdutoItemAdapter);
@@ -116,4 +112,4 @@ public class ProdutosAdapter extends ArrayAdapter<Produto> {
         }
     }
 
-}//fim classe
+}

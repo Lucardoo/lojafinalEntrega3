@@ -95,7 +95,7 @@ public class ProdutosActivity extends AppCompatActivity implements NavigationVie
 
         // obtém a referência do database e do nó
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("produtos");
+        DatabaseReference myRef = database.getReference("/produtos");
 
         // Escuta o database
         myRef.orderByChild("nome").addValueEventListener(new ValueEventListener() {

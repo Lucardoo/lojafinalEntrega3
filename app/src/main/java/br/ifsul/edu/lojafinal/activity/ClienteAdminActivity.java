@@ -2,6 +2,8 @@ package br.ifsul.edu.lojafinal.activity;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -28,6 +30,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
 
 import br.ifsul.edu.lojafinal.R;
 import br.ifsul.edu.lojafinal.barcode.BarcodeCaptureActivity;
@@ -41,8 +49,8 @@ public class ClienteAdminActivity extends AppCompatActivity {
     private Button btSalvar, btPedidos;
     private ImageView imvFoto;
     private Cliente cliente;
+    private byte[] fotoCliente = null;
 
-    private byte[] fotoCliente = null; //foto do produto
     private Uri arquivoUri;
     private FirebaseDatabase database;
     private boolean flagInsertOrUpdate = true;
@@ -63,51 +71,167 @@ public class ClienteAdminActivity extends AppCompatActivity {
         etCPF = findViewById(R.id.etCPFClienteTelaAdmin);
         btSalvar = findViewById(R.id.btSalvarClienteTelaAdmin);
         btPedidos = findViewById(R.id.bt_verPedidos);
+        pbFoto = findViewById(R.id.pb_foto_cliente_admin);
+        imvFoto = findViewById(R.id.imvFotoClienteTelaAdmin);
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        //obtém a instância do database
+        database = FirebaseDatabase.getInstance();
+
+//        //inicializa o objeto de modelo
+//        cliente = new Cliente();
+//
+//        //mapeia os componentes da UI
+//        etCodigoDeBarras = findViewById(R.id.etCodigoProduto);
+//        etNome = findViewById(R.id.etNomeProdutoAdmin);
+//        etDescricao = findViewById(R.id.etDescricaoProdutoAdmin);
+//        etValor = findViewById(R.id.etValorProdutoAdmin);
+//        etQuantidade = findViewById(R.id.etQuantidadeProdutoAdmin);
+//        btSalvar = findViewById(R.id.btInserirProdutoAdmin);
+//        imvFoto = findViewById(R.id.imvFoto);
+//        imbPesquisar = findViewById(R.id.imb_pesquisar);
+//        pbFoto = findViewById(R.id.pb_foto_produto_admin);
+
+        //busca a foto do produto na galeria
+        imvFoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //cria uma Intent
+                //primeiro argumento: ação ACTION_PICK "pegar algum dado"
+                //segundo argumento: refina a ação para arquivos de fotoProduto, na galeria do dispositivo, retornando um URI
+                Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                //inicializa uma Activity esperando o seu resultado. Neste caso, uma que forneca acesso a galeria de imagens do dispositivo.
+                startActivityForResult(Intent.createChooser(intent,getString(R.string.titulo_janela_galeria_imagens)), RC_GALERIA_IMAGE_PICK);
+            }
+        });
+
+
+        //salva o produto no database
         btSalvar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!etCodigoDeBarras.getText().toString().isEmpty() && !etNome.getText().toString().isEmpty() &&
-                !etSobrenome.getText().toString().isEmpty() && !etCPF.getText().toString().isEmpty()){
-
-
-                    DatabaseReference myRef = database.getReference("clientes");
+                if(!etCodigoDeBarras.getText().toString().isEmpty() &&
+                        !etNome.getText().toString().isEmpty() &&
+                        !etSobrenome.getText().toString().isEmpty() &&
+                        !etCPF.getText().toString().isEmpty() ){
+                    //prepara o objeto de modelo
                     Long codigoDeBarras = Long.valueOf(etCodigoDeBarras.getText().toString());
-
+                    cliente.setCodigoDeBarras(codigoDeBarras);
                     cliente.setNome(etNome.getText().toString());
                     cliente.setSobrenome(etSobrenome.getText().toString());
-                    cliente.setCodigoDeBarras(codigoDeBarras);
                     cliente.setCpf(etCPF.getText().toString());
-                    cliente.setKey(myRef.push().getKey()); //cria o nó e devolve a key
-                    myRef.child(cliente.getKey()).setValue(cliente)
-                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void aVoid) {
-                                    cleanForm();
+                    cliente.setSituacao(true);
 
-                                    Snackbar.make(findViewById(R.id.container_activity_user_admin), R.string.user_cadastrado, Snackbar.LENGTH_LONG).show();
-                                }
-                            }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Snackbar.make(findViewById(R.id.container_activity_user_admin), R.string.nao_cadastro_user, Snackbar.LENGTH_LONG).show();
-                        }
-                    });
+                    Log.d(TAG, "Cliente a ser salvo: " + cliente);
+                    if(fotoCliente != null){
+                        uploadFotoDoCliente();
 
-                    Log.d("TAG", "Objeto de cliente: " + cliente);
-                    AppSetup.cliente = cliente;
+                    }else{
+                        salvarCliente();
+                    }
                 }else{
                     Snackbar.make(findViewById(R.id.container_activity_cliente_admin), R.string.snack_preencher_todos_campos, Snackbar.LENGTH_LONG).show();
                 }
+
             }
         });
 
-        btPedidos.setOnClickListener(new View.OnClickListener() {
+    }
+
+    private void uploadFotoDoCliente() {
+        //faz o upload da foto do produto no firebase storage
+        StorageReference mStorageRef = FirebaseStorage.getInstance().getReference("images/clientes/" + cliente.getCodigoDeBarras() + ".jpeg");
+        UploadTask uploadTask = mStorageRef.putBytes(fotoCliente);
+        uploadTask.addOnFailureListener(new OnFailureListener() {
             @Override
-            public void onClick(View v) {
-                startActivity(new Intent(ClienteAdminActivity.this, PedidosActivity.class));
+            public void onFailure(@NonNull Exception exception) {
+                Toast.makeText(ClienteAdminActivity.this, getString(R.string.toast_foto_produto_upload_fail), Toast.LENGTH_SHORT).show();
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                Log.d(TAG, "URL da foto do cliente no storage: " + taskSnapshot.getMetadata().getPath());
+                cliente.setUrl_foto(taskSnapshot.getMetadata().getPath()); //contains file metadata such as size, content-type, etc.
+                salvarCliente();
             }
         });
+    }
+
+    private void salvarCliente(){
+        if(flagInsertOrUpdate){//insert
+            // obtém a referência do database
+            DatabaseReference myRef = database.getReference("/clientes");
+            Log.d(TAG, "Barcode = " + cliente.getCodigoDeBarras());
+            Query query = myRef.orderByChild("codigoDeBarras").equalTo(cliente.getCodigoDeBarras()).limitToFirst(1);
+            query.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    Log.d(TAG, "dataSnapshot isNoBanco = " + dataSnapshot.getValue());
+                    if(dataSnapshot.getValue() != null){
+                        Toast.makeText(ClienteAdminActivity.this, R.string.toast_codigo_barras_ja_cadastrado, Toast.LENGTH_SHORT).show();
+                    }else{
+                        showWait();
+                        DatabaseReference myRef = database.getReference("/clientes");
+                        cliente.setKey(myRef.push().getKey()); //cria o nó e devolve a key
+                        myRef.child(cliente.getKey()).setValue(cliente) //salva o cliente no database
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Toast.makeText(ClienteAdminActivity.this, getString(R.string.toast_produto_salvo), Toast.LENGTH_SHORT).show();
+                                        limparForm();
+                                        dismissWait();
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Snackbar.make(findViewById(R.id.container_activity_cliente_admin), R.string.snack_operacao_falhou,
+                                                Snackbar.LENGTH_LONG).show();
+                                        dismissWait();
+                                    }
+                                });
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    //Se ocorrer um erro
+                }
+            });
+
+        }else{ //update
+            flagInsertOrUpdate = true;
+            showWait();
+            DatabaseReference myRef = database.getReference("/clientes/" + cliente.getKey());
+            myRef.setValue(cliente)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Toast.makeText(ClienteAdminActivity.this, getString(R.string.toast_produto_salvo), Toast.LENGTH_SHORT).show();
+                            limparForm();
+                            dismissWait();
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Snackbar.make(findViewById(R.id.container_activity_cliente_admin), R.string.snack_operacao_falhou, Snackbar.LENGTH_LONG).show();
+                            dismissWait();
+                        }
+                    });
+        }
+    }
+
+    private void limparForm() {
+        cliente = new Cliente();
+        etCodigoDeBarras.setEnabled(true);
+        fotoCliente = null;
+        etCodigoDeBarras.setText(null);
+        etNome.setText(null);
+        etSobrenome.setText(null);
+        etCPF.setText(null);
+        imvFoto.setImageResource(R.drawable.img_carrinho_de_compras);
     }
 
     @Override
@@ -119,24 +243,19 @@ public class ClienteAdminActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
-            case R.id.menuitem_produtos_cdbar:{
+            case R.id.menuitem_produtos_cdbar:
                 // launch barcode activity.
                 Intent intent = new Intent(this, BarcodeCaptureActivity.class);
                 intent.putExtra(BarcodeCaptureActivity.AutoFocus, true); //true liga a funcionalidade autofoco
                 intent.putExtra(BarcodeCaptureActivity.UseFlash, false); //true liga a lanterna (fash)
                 startActivityForResult(intent, RC_BARCODE_CAPTURE);
                 break;
-            }
-
-            case R.id.menuitem_limparform_admin:{
-                cleanForm();
+            case R.id.menuitem_limparform_admin:
+                limparForm();
                 break;
-            }
-            case android.R.id.home:{
+            case android.R.id.home:
                 finish();
                 break;
-            }
-
         }
         return true;
     }
@@ -150,64 +269,115 @@ public class ClienteAdminActivity extends AppCompatActivity {
                     //Toast.makeText(this, barcode.displayValue, Toast.LENGTH_SHORT).show();
                     Log.d(TAG, "Barcode read: " + barcode.displayValue);
                     etCodigoDeBarras.setText(barcode.displayValue);
-
-                    searchDb(Long.valueOf(etCodigoDeBarras.getText().toString()));
+                    buscarNoBanco(Long.valueOf(barcode.displayValue));
                 }
             } else {
                 Toast.makeText(this, String.format(getString(R.string.barcode_error),
                         CommonStatusCodes.getStatusCodeString(resultCode)), Toast.LENGTH_SHORT).show();
             }
-        } else {
-            super.onActivityResult(requestCode, resultCode, data);
+        } else if(requestCode == RC_GALERIA_IMAGE_PICK){
+            if (resultCode == RESULT_OK) {
+                arquivoUri = data.getData();
+                Log.d(TAG, "Uri da fotoProduto: " + arquivoUri);
+                imvFoto.setImageURI(arquivoUri);
+                try {
+                    Bitmap bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(arquivoUri));
+                    bitmap = Bitmap.createScaledBitmap(bitmap, 200, 200, true); //reduz e aplica um filtro na fotoProduto
+                    byte[] img = getBitmapAsByteArray(bitmap); //converte para um fluxo de bytes
+                    fotoCliente = img; //coloca a fotoProduto no objeto fotoProduto (um array de bytes (byte[]))
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
-    private void searchDb(Long codigoDeBarras){
-        DatabaseReference myRef = database.getReference("clientes/");
-        Log.d("TAG", "Barcode: "+codigoDeBarras);
-
+    private void buscarNoBanco(Long codigoDeBarras) {
+        // obtém a referência do database
+        DatabaseReference myRef = database.getReference("/clientes");
+        Log.d(TAG, "Barcode = " + codigoDeBarras);
         Query query = myRef.orderByChild("codigoDeBarras").equalTo(codigoDeBarras).limitToFirst(1);
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            public void onDataChange(DataSnapshot dataSnapshot) {
                 Log.d(TAG, "dataSnapshot = " + dataSnapshot.getValue());
                 if(dataSnapshot.getValue() != null){
                     for(DataSnapshot ds : dataSnapshot.getChildren()){
                         cliente = ds.getValue(Cliente.class);
-                        cliente.setKey(ds.getKey());
                     }
                     flagInsertOrUpdate = false;
-
-                    loadView();
+                    carregarView();
                 }else{
                     Toast.makeText(ClienteAdminActivity.this, getString(R.string.toast_produto_nao_cadastrado), Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                //providenciar retorno em caso de erro
+            public void onCancelled(DatabaseError databaseError) {
+                //Se ocorrer um erro
             }
         });
     }
 
-    private void loadView(){
+    private void carregarView() {
         etCodigoDeBarras.setText(cliente.getCodigoDeBarras().toString());
         etCodigoDeBarras.setEnabled(false);
         etNome.setText(cliente.getNome());
         etSobrenome.setText(cliente.getSobrenome());
         etCPF.setText(cliente.getCpf());
+        if(cliente.getUrl_foto() != ""){
+            pbFoto.setVisibility(ProgressBar.VISIBLE);
+            if(AppSetup.cacheClientes.get(cliente.getKey()) == null){
+                StorageReference mStorageRef = FirebaseStorage.getInstance().getReference("images/clientes/" + cliente.getCodigoDeBarras() + ".jpeg");
+                final long ONE_MEGABYTE = 1024 * 1024;
+                mStorageRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                    @Override
+                    public void onSuccess(byte[] bytes) {
+                        Bitmap fotoEmBitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                        imvFoto.setImageBitmap(fotoEmBitmap);
+                        pbFoto.setVisibility(ProgressBar.INVISIBLE);
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        pbFoto.setVisibility(ProgressBar.INVISIBLE);
+                        Log.d(TAG, "Download da foto do produto falhou: " + "images/clientes" + cliente.getCodigoDeBarras() + ".jpeg");
+                    }
+                });
+            }else{
+                imvFoto.setImageBitmap(AppSetup.cacheClientes.get(cliente.getKey()));
+                pbFoto.setVisibility(ProgressBar.INVISIBLE);
+            }
+
+        }
     }
 
-    private void cleanForm(){
-        cliente = new Cliente();
-
-        etCodigoDeBarras.setEnabled(true);
-        etCodigoDeBarras.setText(null);
-        etNome.setText(null);
-        etSobrenome.setText(null);
-        etCPF.setText(null);
+    /**
+     * Converte um Bitmap em um array de bytes (bytes[])
+     * @param bitmap
+     * @return byte[]
+     */
+    public static byte[] getBitmapAsByteArray(Bitmap bitmap) {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream(); //criam um stream para ByteArray
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 80, outputStream); //comprime a fotoProduto
+        return outputStream.toByteArray(); //retorna a fotoProduto como um Array de Bytes (byte[])
     }
 
+    /*Emite uma ProgressDialog
+      Uma caixa com uma mensagem de progressão e uma barra de progressão
+    */
+    public void  showWait(){
+        //cria e configura a caixa de diálogo e progressão
+        mProgressDialog = new ProgressDialog(ClienteAdminActivity.this);
+        mProgressDialog.setMessage(getString(R.string.message_processando));
+        mProgressDialog.setIndeterminate(true);
+        mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        mProgressDialog.show();
+    }
 
-}
+    //Faz Dismiss na ProgressDialog
+    public void dismissWait(){
+        mProgressDialog.dismiss();
+    }
+
+}//fim classe
